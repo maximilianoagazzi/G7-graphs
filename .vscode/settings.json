@@ -1,0 +1,14 @@
+{
+    "files.associations": {
+        "stdio.h": "c",
+        "queue.h": "c",
+        "MAIN.C": "cpp",
+        "xlocale": "cpp",
+        "stack": "cpp",
+        "vector": "cpp",
+        "xstring": "cpp",
+        "xutility": "cpp",
+        "initializer_list": "c",
+        "utility": "c"
+    }
+}
