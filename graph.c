@@ -178,11 +178,11 @@ list* graph_vertex_adjacent_list(graph* g, int index)  //Devuelve una lista de a
 
 int graph_edge_weight(graph* g, int from, int to)  //devuelve el peso de la arista entre dos vertices
 {
-    if(g == NULL) return 0;
+    if(g == NULL || from < 0 || to < 0 || from >= vector_size(g->vertex) || to >= vector_size(g->vertex)) return -1;
 
     int* val = (int*)matrix_get(g->adjacency, from, to);
 
-    return (val != NULL) ? *val : 0;
+    return (val != NULL) ? *val : -1;
 }
 
 int graph_edge_cost(graph* g, int from, int to)  //devuelve el costo de la arista entre dos vertices
