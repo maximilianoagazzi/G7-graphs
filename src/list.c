@@ -9,7 +9,7 @@ typedef struct _list {
     int size;
 } list;
 
-list* list_create()
+list* list_new()
 {
     list* l = (list* )malloc(sizeof(list));
     if (l == NULL) {
@@ -69,7 +69,23 @@ void list_append(list* l, void* elem) //Inseta al final
     }
 }
 
-void list_free(list** l, int dinamic) //Destruye la lista y hay que indicarle si los datos son dinamicos o no
+void* list_remplace(list* l, void* elem) //Reemplaza el elemento donde esta current
+{
+    void* old = NULL;
+    if(l != NULL && l->current != NULL) {
+        node** aux = &(l->head);
+        while(*aux != NULL && *aux != l->current) {
+            aux = get_next_node(*aux);
+        }
+        if(*aux == l->current) {
+            old = get_data(*aux);
+            set_data(*aux, elem);
+        }
+    }
+    return old;
+}
+
+void list_destroy(list** l, int dinamic) //Destruye la lista y hay que indicarle si los datos son dinamicos o no
 {
     void* data;
     if(*l != NULL) {

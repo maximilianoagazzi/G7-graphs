@@ -8,11 +8,12 @@
 
 typedef struct _list list;
 
-LIST_API list* list_create();
+LIST_API list* list_new();
 LIST_API void list_insert_first(list *l, void* elem);
 LIST_API void list_insert_current(list *l, void* elem);
 LIST_API void list_append(list* l, void* elem);
-LIST_API void list_free(list** l, int dinamic);
+LIST_API void* list_remplace(list* l, void* elem);
+LIST_API void list_destroy(list** l, int dinamic);
 LIST_API int list_length(list* l);
 LIST_API void* list_get(list* l);
 LIST_API void* list_first(list* l);

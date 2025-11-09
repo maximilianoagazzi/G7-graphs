@@ -16,16 +16,15 @@ int main()
 
     int* v = vector_with_vertexs_degree(g1);
     printf("\nEl grado de cada vertice es: ");
-    for(int i=0; i<graph_vertex_count(g1); i++) {
+    for(int i=0; i<graph_vertex_count(g1); i++)
         printf("%d  ", v[i]);
-    }
     free(v);
     printf("\n");
     //Ejercicio 3
 
     printf("\nEl grafo recorrido por profundidad es: ");
     DFS(g1, print_array);
-    printf("\nEl grafo recorrido por amplitud es: ");
+    printf("\n\nEl grafo recorrido por amplitud es: ");
     BFS(g1, print_array);
     //Ejercicio 4
 
@@ -41,35 +40,32 @@ int main()
     //Ejercicio 6
 
     int cyclic = is_cyclic_digraph(g2);
-    if(cyclic == 1) {
+    if(cyclic == 1)
         printf("\nEl grafo g2 contiene al menos un ciclo\n");
-    } else {
+    else
         printf("\nEl grafo g2 no contiene ningun ciclo\n");
-    }
     //Ejercicio 7a
 
     graph* g3 = graph_create3();
     int start = is_start(g3);
-    if(start == 1) {
+    if(start == 1)
         printf("\nEl grafo g3 tiene forma de estrella\n");
-    } else {
+    else
         printf("\nEl grafo g3 no tiene forma de estrella\n");
-    }
     //Ejercicio 7b
 
     graph* g4 = graph_create4();
     int circular = is_circular(g4);
-    if(circular == 1) {
+    if(circular == 1)
         printf("\nEl grafo g4 puede ser representado por una lista circular\n");
-    } else {
+    else
         printf("\nEl grafo g4 no puede ser representado por una lista circular\n");
-    }
     //Ejercicio 7c
 
     graph* g5 = graph_create5();
     stack* s1 = stack_new();
     Dijkstra_path(g5, 0, 10, s1);
-    printf("\nEl camino mas corto del vertice A hacia el vertice K en g5 es:\n");
+    printf("\nEl camino mas corto del vertice A hacia el vertice K en g5 es: ");
     print_stack(s1, print_array);
     stack_free(&s1, 0);
     //Ejercicio 8
@@ -85,10 +81,29 @@ int main()
     //Ejercicio 10
 
     graph* g7 = graph_create7();
-    printf("\nEl digrafo g7 impreso en orden topologico es:\n");
+    printf("\nEl digrafo g7 impreso en orden topologico es: ");
     topological_print(g7);
-    printf("\n");
     //Ejercicio 11
+
+    graph* g8 = graph_create8();
+    graph* a1 = coverage_tree_BFS(g8, 0);
+    printf("\n\nEl arbol de covertura no minimo por BFS de g8 es:\n\n");
+    print_graph(a1, print_array);
+    graph_destroy(&a1, 1);
+    //Ejercicio 12a
+
+    graph* a2 = coverage_tree_DFS(g8, 0);
+    printf("\nEl arbol de covertura no minimo por DFS de g8 es:\n\n");
+    print_graph(a2, print_array);
+    graph_destroy(&a2, 1);
+    //Ejercicio 12b
+
+    graph* g9 = graph_create9();
+    list* l = get_mother_vertexs(g9);
+    printf("\nLa lista de vertices madre de g9 es: ");
+    print_list_array(l);
+    list_destroy(&l, 1);
+    //Ejercicio 13
 
     graph_destroy(&g1, 0);
     graph_destroy(&g2, 0);
@@ -97,6 +112,8 @@ int main()
     graph_destroy(&g5, 0);
     graph_destroy(&g6, 1);
     graph_destroy(&g7, 0);
+    graph_destroy(&g8, 0);
+    graph_destroy(&g9, 0);
     //Destruye los grafos
 
     return 0;
@@ -157,7 +174,7 @@ void print_graph(graph* g, void print_elemens(void* a))  //Ejercicio de preuba
             list_next(l);
         }
         printf("\n");
-        list_free(&l, 0);
+        list_destroy(&l, 0);
     }
 }
 
@@ -774,5 +791,214 @@ void topological_aux(graph* g, int v, int* visited, stack* s)  //Ejercicio 11
     }
 
     push(s, graph_vertex_get(g, v));
+}
+
+graph* graph_create8()  //Ejercicio 12a
+{
+    graph* g = graph_new();
+
+    int A = graph_vertex_add(g, "A");
+    int B = graph_vertex_add(g, "B");
+    int C = graph_vertex_add(g, "C");
+    int D = graph_vertex_add(g, "D");
+    int E = graph_vertex_add(g, "E");
+    int F = graph_vertex_add(g, "F");
+    int G = graph_vertex_add(g, "G");
+
+    graph_edge_add(g, A, B, 1);
+    graph_edge_add(g, A, D, 4);
+    graph_edge_add(g, B, A, 1);
+    graph_edge_add(g, B, C, 2);
+    graph_edge_add(g, B, D, 6);
+    graph_edge_add(g, B, E, 4);
+    graph_edge_add(g, C, B, 2);
+    graph_edge_add(g, C, E, 5);
+    graph_edge_add(g, C, F, 5);
+    graph_edge_add(g, D, A, 4);
+    graph_edge_add(g, D, B, 6);
+    graph_edge_add(g, D, E, 4);
+    graph_edge_add(g, D, G, 4);
+    graph_edge_add(g, E, B, 4);
+    graph_edge_add(g, E, C, 5);
+    graph_edge_add(g, E, D, 4);
+    graph_edge_add(g, E, F, 8);
+    graph_edge_add(g, E, G, 7);
+    graph_edge_add(g, F, C, 5);
+    graph_edge_add(g, F, E, 8);
+    graph_edge_add(g, F, G, 3);
+    graph_edge_add(g, G, D, 4);
+    graph_edge_add(g, G, E, 7);
+    graph_edge_add(g, G, F, 3);
+
+    return g;
+}
+
+graph* coverage_tree_BFS(graph* g, int start)  //Ejercicio 12a
+{
+    if(g == NULL || start < 0 || start >= graph_vertex_count(g)) return NULL;
+
+    int n = graph_vertex_count(g);
+    int* visited = (int* )calloc(n, sizeof(int));
+    graph* a = coverage_tree_BFS_aux(g, start, visited);
+    free(visited);
+
+    return a;
+}
+
+graph* coverage_tree_BFS_aux(graph* g, int start, int* visited)  //Ejercicio 12a
+{
+    if (start < 0 || start >= graph_vertex_count(g)) return NULL;
+
+    graph* a = graph_vertex_clone(g);
+    
+    queue* q = queue_new();
+    int* first = (int* )malloc(sizeof(int));
+    *first = start;
+    enqueue(q, first);
+    visited[start] = 1;
+
+    while(!queue_is_empty(q)) {
+        int* idx_ptr = (int* )dequeue(q);
+        int idx = *idx_ptr;
+        free(idx_ptr);
+
+        for (int j=0; j<graph_vertex_count(g); j++) {
+            int w = graph_edge_weight(g, idx, j);
+            if (w > 0 && visited[j] == 0) {
+                visited[j] = 1;
+                graph_edge_add(a, idx, j, w);
+                graph_edge_add(a, j, idx, w);
+
+                int* next = (int* )malloc(sizeof(int));
+                *next = j;
+                enqueue(q, next);
+            }
+        }
+    }
+    queue_free(&q, 1);
+
+    return a;
+}
+
+graph* graph_vertex_clone(graph* g)  //Ejercicio 12a
+{
+    if(g == NULL) return NULL;
+
+    graph* a = graph_new();
+
+    if(a != NULL) {
+        for(int i=0; i<graph_vertex_count(g); i++) {
+            graph_vertex_add(a, string_copy(graph_vertex_get(g, i)));
+        }
+    }
+
+    return a;
+}
+
+graph* coverage_tree_DFS(graph* g, int start) //Ejercicio 12b
+{ 
+    if(g == NULL || start < 0 || start >= graph_vertex_count(g)) return NULL;
+    
+    int n = graph_vertex_count(g);
+    int* visited = (int* )calloc(n, sizeof(int));
+    graph* a = graph_vertex_clone(g);
+    coverage_tree_DFS_aux(g, a, start, visited);
+    free(visited);
+    
+    return a;
+}
+
+void coverage_tree_DFS_aux(graph* g, graph* a, int index, int* visited) //Ejercicio 12b
+{
+    visited[index] = 1;
+
+    for (int j=0; j<graph_vertex_count(g); j++) {
+        int w = graph_edge_weight(g, index, j);
+        if(w > 0 && visited[j] == 0) { 
+            visited[j] = 1;
+            graph_edge_add(a, index, j, w);
+            graph_edge_add(a, j, index, w);
+            coverage_tree_DFS_aux(g, a, j, visited);
+        }
+    }
+}
+
+graph* graph_create9()  //Ejercicio 13
+{
+    graph* g = graph_new();
+
+    int A = graph_vertex_add(g, "A");
+    int B = graph_vertex_add(g, "B");
+    int C = graph_vertex_add(g, "C");
+    int D = graph_vertex_add(g, "D");
+    int E = graph_vertex_add(g, "E");
+
+    graph_edge_add(g, A, C, 1);
+    graph_edge_add(g, A, D, 1);
+    graph_edge_add(g, B, A, 1);
+    graph_edge_add(g, B, E, 1);
+    graph_edge_add(g, C, E, 1);
+    graph_edge_add(g, D, C, 1);
+    graph_edge_add(g, E, D, 1);
+
+    return g;
+}
+
+void* copy_int(void* elem)  //Ejercicio 13
+{
+    if(elem == NULL) return NULL;
+
+    int* new_elem = (int* )malloc(sizeof(int));
+    if(new_elem != NULL)
+        *new_elem = *(int* )elem;
+
+    return new_elem;
+}
+
+void DFS_13_aux(graph* g, int index, int* visited)  //Ejercicio 13
+{
+    visited[index] = 1;
+
+    for(int j=0; j<graph_vertex_count(g); j++) {
+        if(graph_edge_weight(g, index, j) > 0 && visited[j] == 0)
+            DFS_13_aux(g, j, visited);
+    }
+}
+
+list* get_mother_vertexs(graph* g) 
+{
+    if(g == NULL) return NULL;
+
+    int n = graph_vertex_count(g);
+    list* l = list_new();
+    int* visited = (int* )calloc(n, sizeof(int));
+
+    for(int i=0; i<n; i++) {
+        DFS_13_aux(g, i, visited);
+
+        int ok = 1;
+        for(int j=0; j<n; j++)
+            if(visited[j] == 0) ok = 0;
+
+        if(ok == 1) list_append(l, string_copy(graph_vertex_get(g, i)));
+
+        for(int j=0; j<n; j++) visited[j] = 0;
+    }
+    free(visited);
+
+    return l;
+}
+
+void print_list_array(list* l)  //Ejercicio 13
+{
+    if(l == NULL) return;
+
+    list_first(l);
+    for(int i=0; i<list_length(l); i++) {
+        printf("%s", (char* )list_get(l));
+        if(i < list_length(l) - 1) printf(" -- ");
+        list_next(l);
+    }
+    printf("\n");
 }
 

@@ -44,5 +44,16 @@ graph* transpose_digraph(graph* g, void* copy_vertex(void* ));
 graph* graph_create7();
 void topological_print(graph* g);
 void topological_aux(graph* g, int v, int* visited, stack* s);
+graph* graph_create8();
+graph* coverage_tree_BFS(graph* g, int start);
+graph* coverage_tree_BFS_aux(graph* g, int start, int* visited);
+graph* graph_vertex_clone(graph* g);
+graph* coverage_tree_DFS(graph* g, int start);
+void coverage_tree_DFS_aux(graph* g, graph* a, int start, int* visited);
+graph* graph_create9();
+void* copy_int(void* elem);
+void DFS_13_aux(graph* g, int index, int* visited);
+list* get_mother_vertexs(graph* g);
+void print_list_array(list* l);
 
 #endif

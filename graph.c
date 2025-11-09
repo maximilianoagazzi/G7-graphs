@@ -164,7 +164,7 @@ list* graph_vertex_adjacent_list(graph* g, int index)  //Devuelve una lista de a
 {
     if(g == NULL || index >= vector_size(g->vertex) || index < 0) return NULL;
 
-    list* l = list_create();
+    list* l = list_new();
     if(l != NULL) {
         int size = vector_size(g->vertex);
         for(int j=0; j<size; j++) {
