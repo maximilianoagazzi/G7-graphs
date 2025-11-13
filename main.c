@@ -105,6 +105,11 @@ int main()
     list_destroy(&l, 1);
     //Ejercicio 13
 
+    graph* g10 = kruskal(g8);
+    printf("\nEl arbol generador de peso minimo por Kruskal de g8 es:\n\n");
+    print_graph(g10, print_array);
+    //Ejercicio 15
+
     graph_destroy(&g1, 0);
     graph_destroy(&g2, 0);
     graph_destroy(&g3, 0);
@@ -114,6 +119,7 @@ int main()
     graph_destroy(&g7, 0);
     graph_destroy(&g8, 0);
     graph_destroy(&g9, 0);
+    graph_destroy(&g10, 1);
     //Destruye los grafos
 
     return 0;
@@ -816,11 +822,11 @@ graph* graph_create8()  //Ejercicio 12a
     graph_edge_add(g, C, F, 5);
     graph_edge_add(g, D, A, 4);
     graph_edge_add(g, D, B, 6);
-    graph_edge_add(g, D, E, 4);
+    graph_edge_add(g, D, E, 3);
     graph_edge_add(g, D, G, 4);
     graph_edge_add(g, E, B, 4);
     graph_edge_add(g, E, C, 5);
-    graph_edge_add(g, E, D, 4);
+    graph_edge_add(g, E, D, 3);
     graph_edge_add(g, E, F, 8);
     graph_edge_add(g, E, G, 7);
     graph_edge_add(g, F, C, 5);
@@ -965,7 +971,7 @@ void DFS_13_aux(graph* g, int index, int* visited)  //Ejercicio 13
     }
 }
 
-list* get_mother_vertexs(graph* g) 
+list* get_mother_vertexs(graph* g)  //Ejercicio 13
 {
     if(g == NULL) return NULL;
 
@@ -1002,3 +1008,94 @@ void print_list_array(list* l)  //Ejercicio 13
     printf("\n");
 }
 
+arc* arc_new(int origin, int destiny, int cost)  //Ejercicio 15
+{
+    arc* a = (arc* )malloc(sizeof(arc));
+    
+    if(a != NULL) {
+        a->origin = origin;
+        a->destiny = destiny;
+        a->cost = cost;
+        a->next = NULL;
+    }
+
+    return a;
+}
+
+void list_arc_insert_sort(arc** l, int origin, int destiny, int cost)  //Ejercicio 15
+{
+    if(l == NULL) return;
+
+    arc* a = arc_new(origin, destiny, cost);
+    while(*l != NULL && (*l)->cost <= a->cost)
+        l = &((*l)->next);
+    
+    a->next = *l;
+    *l = a;
+}
+
+arc* arc_graph_create(graph* g)  //Ejercicio 15
+{
+    if(g == NULL) return NULL;
+
+    int n = graph_vertex_count(g);
+    arc* a = NULL;
+    for(int i=0; i<n; i++) {
+        for(int j=i; j<n; j++) {
+            if(i != j) {
+                int w = graph_edge_weight(g, i, j);
+                if(w > 0) list_arc_insert_sort(&a, i, j, w);
+            }
+        }
+    }
+
+    return a;
+}
+
+graph* kruskal(graph* g)  //Ejercicio 15
+{
+    if(g == NULL) return NULL;
+
+    int n = graph_vertex_count(g);
+    graph* k = graph_new();
+    if(k != NULL) {
+        for(int i=0; i<n; i++)
+            graph_vertex_add(k, string_copy(graph_vertex_get(g, i)));
+        
+        arc* a = arc_graph_create(g);
+        int* tree = (int* )malloc(n * sizeof(int));
+        for(int i=0; i<n; i++)
+            tree[i] = i;
+        
+        kruskal_aux(k, a, tree);
+        while(a != NULL) {
+            arc* next = a->next;
+            free(a);
+            a = next;
+        }
+        free(tree);
+    }
+    
+    return k;
+}
+
+void kruskal_aux(graph* k, arc* arcs, int* tree)  //Ejercicio 15
+{
+    arc* h = arcs;
+    int n = graph_vertex_count(k);
+    while(arcs != NULL) {
+        arc* a = arcs;
+        arcs = arcs->next;
+
+        if(tree[a->origin] != tree[a->destiny]) {
+            graph_edge_add(k, a->origin, a->destiny, a->cost);
+            graph_edge_add(k, a->destiny, a->origin, a->cost);
+
+            int aux = tree[a->destiny];
+            tree[a->destiny] = tree[a->origin];
+            for(int i=0; i<n; i++)
+                if(tree[i] == aux) tree[i] = tree[a->destiny];
+        }
+    }
+    arcs = h;
+}

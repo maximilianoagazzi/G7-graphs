@@ -10,6 +10,13 @@ typedef struct {
     int pred;
 } table_elem;
 
+typedef struct _arc {
+    int origin;
+    int destiny;
+    int cost;
+    struct _arc* next;
+} arc;
+
 graph* europe_graph_create();
 void print_graph(graph* g, void print_elemens(void* a));
 void print_array(void* value);
@@ -55,5 +62,10 @@ void* copy_int(void* elem);
 void DFS_13_aux(graph* g, int index, int* visited);
 list* get_mother_vertexs(graph* g);
 void print_list_array(list* l);
+arc* arc_new(int origin, int destiny, int cost);
+void list_arc_insert_sort(arc** l, int origin, int destiny, int cost);
+arc* arc_graph_create(graph* g);
+graph* kruskal(graph* g);
+void kruskal_aux(graph* k, arc* arcs, int* tree);
 
 #endif
